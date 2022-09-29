@@ -11,7 +11,7 @@ $ ln -s ../util util
 to use in a file... include this line:
 let __ = require('./util');
 or
-let __ = require('./util/RiRutil');
+let __ = require('./util/util');
 
 */
 
@@ -126,6 +126,38 @@ function parseCommandLineArgs(name='something',extraArr=[]){
     return true;
 }
 
+// a quick and dirty factorial
+let _factmap = new Map();
+_factmap.set(2,2);
+let _factmapmaxn = 2;
+let _depth=0
+//let _dspace=''
+function factorial(n){
+  ++_depth;
+  let _dspace = ' '.repeat(_depth);
+  let fact = NaN;
+  if( _depth > 20)
+  {
+    clog(`*** to deep ***`)
+    return 1;
+  }
+  clog(`${_dspace}factorial(n:${n})`)  
+  if( _factmap.has(n) ){
+    clog(`${_dspace}looked it up`)  
+    fact =  _factmap.get(n);
+  } 
+  else if( n < 0           ) fact = NaN;
+  else if( n < 2           ) fact = 1;
+  else{
+    fact = n * factorial(n-1);
+    _factmap.set(n,fact);
+    clog(`${_dspace}calculate and save`)  
+  }
+  clog(`${_dspace}factorial = ${fact})`)  
+  --_depth;
+  return fact;
+}
+
 module.exports = {
   // isSilent, isDebug, isVerbose,
   setSilent, setVerbose, setDebug,
@@ -137,5 +169,39 @@ module.exports = {
   vlogdline, vlogsline,
   getNumbersFromCommandLine,
   getStringsFromCommandLine,
-  parseCommandLineArgs
+  parseCommandLineArgs,
+  factorial
 };
+
+/*
+// example of use #1
+
+if(!__.parseCommandLineArgs('solution')){
+    return 0;
+}
+let strarr = __.getStringsFromCommandLine();
+while(strarr.length>0){
+    let s = strarr.shift();
+    if(!'<->'.includes(s.charAt(0))) s = s.substring(1);
+    let salutes = ''+solution(s)
+    __.clog(`s: ${s}`);
+    __.clog(`salutes: ${salutes}`);
+    __.clog();
+}
+
+// example of use #2
+
+if(!__.parseCommandLineArgs('solution')){
+    return 0;
+}
+let nums = __.getNumbersFromCommandLine();
+while(nums.length>0){
+    let x = nums.shift();
+    let y = nums.length>0 ? nums.shift() : x;
+    let id = ''+solution(x,y)
+    __.clog(`x,y: (${x},${y}) = id: ${id}`);
+    __.clog();
+}
+
+
+*/
